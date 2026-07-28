@@ -9,8 +9,12 @@ app.use(express.json());
 
 app.use("/todos", todoRouter);
 
-connectDB().then(() => {
+try {
+  await connectDB();
   app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
   });
-});
+} catch (err) {
+  console.error("Failed to start", err);
+  process.exit(1);
+}
