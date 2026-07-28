@@ -10,5 +10,6 @@ export const connectDB = async () => {
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error("MongoDB connection error:", message);
+    throw new Error(`MongoDB connection error: ${message}`);
   }
 };
