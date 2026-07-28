@@ -19,7 +19,7 @@ provider "hcloud" {
   token = var.hcloud_token
 }
 
-resourece "tls_private_key" "ssh" {
+resource "tls_private_key" "ssh" {
     algorithm = "ED25519"
 }
 
