@@ -19,6 +19,10 @@ provider "hcloud" {
   token = var.hcloud_token
 }
 
+resourece "tls_private_key" "ssh" {
+    algorithm = "ED25519"
+}
+
 resource "hcloud_ssh_key" "deployer" {
   name = var.key_name
   public_key = tls_private_key.ssh.public_key_openssh
@@ -26,7 +30,7 @@ resource "hcloud_ssh_key" "deployer" {
 
 resource "local_file" "ssh_private_key" {
   content = tls_private_key.ssh.private_key_openssh
-  filename = "${path.module}.${var.key_name}.pem"
+  filename = "${path.module}/${var.key_name}.pem"
   file_permission = "0600"
 }
 
