@@ -23,10 +23,12 @@ router.post("/", async (req, res) => {
 });
 
 router.patch("/:id", async (req, res) => {
-  const todo = await Todo.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
+  const { title, completed } = req.body;
+  const todo = await Todo.findByIdAndUpdate(
+    req.params.id,
+    { ...(title !== undefined && { title }), ...(completed !== undefined && { completed }) },
+    { new: true, runValidators: true },
+  );
   if (!todo) {
     res.status(404).json({ message: "Todo not found" });
     return;
