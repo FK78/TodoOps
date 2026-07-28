@@ -25,7 +25,7 @@ resource "hcloud_ssh_key" "deployer" {
 }
 
 resource "local_file" "ssh_private_key" {
-  content = "tls_private_key.ssh.private_key_openssh"
+  content = tls_private_key.ssh.private_key_openssh
   filename = "${path.module}.${var.key_name}.pem"
   file_permission = "0600"
 }
