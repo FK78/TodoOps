@@ -74,6 +74,7 @@ resource "aws_instance" "todo_ops" {
     instance_type = var.instance_type
     key_name = aws_key_pair.deployer.key_name
     vpc_security_group_ids = [aws_security_group.todo_ops.id]
+    associate_public_ip_address = true
 
     tags = {
         Name = "todo-ops-server"
