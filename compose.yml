@@ -7,6 +7,11 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASS}
     volumes:
       - mongo-data:/data/db
+    healthcheck:
+      test: mongosh --eval "db.runCommand('ping')"
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   todo:
     container_name: todo-ops
@@ -19,7 +24,8 @@ services:
       - PORT=${PORT}
       - MONGODB_URI=mongodb://${MONGO_ROOT_USER}:${MONGO_ROOT_PASS}@mongo:27017/todoops?authSource=admin
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
 
 volumes:
   mongo-data:
