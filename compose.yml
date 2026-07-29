@@ -9,7 +9,7 @@ services:
       MONGO_APP_PASS: ${MONGO_APP_PASS}
     volumes:
       - mongo-data:/data/db
-      - ./init.js:/docker-entrypoint-initdb/init.js.d:ro
+      - ./init.js:/docker-entrypoint-initdb.d/init.js:ro
     healthcheck:
       test: mongosh --eval "db.runCommand('ping')"
       interval: 30s
