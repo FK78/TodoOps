@@ -5,8 +5,11 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASS}
+      MONGO_APP_USER: ${MONGO_APP_USER}
+      MONGO_APP_PASS: ${MONGO_APP_PASS}
     volumes:
       - mongo-data:/data/db
+      - ./init.js:/docker-entrypoint-initdb/init.js:ro
     healthcheck:
       test: mongosh --quiet --eval "db.runCommand('ping').ok"
       interval: 30s
@@ -21,7 +24,7 @@ services:
       - "{{ app_port }}:{{ app_port }}"
     environment:
       - PORT={{ app_port }}
-      - MONGODB_URI=mongodb://${MONGO_ROOT_USER}:${MONGO_ROOT_PASS}@mongo:27017/todoops?authSource=admin
+      - MONGODB_URI=mongodb://${MONGO_APP_USER}:${MONGO_APP_PASS}@mongo:27017/todoops?authSource=todoops
     depends_on:
       mongo:
         condition: service_healthy

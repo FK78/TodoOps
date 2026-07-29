@@ -3,10 +3,12 @@
   hosts: todo_servers
   become: true
   vars:
-    docker_image: fk78/todo-ops:latest
+    docker_image: ghcr.io/fk78/todo-ops:latest
     app_port: "3000"
-    mongo_user: mongo-todoops
-    mongo_pass: "{{ lookup('env', 'MONGO_ROOT_PASS') }}"
+    mongo_root_user: mongo-todoops
+    mongo_root_pass: "{{ lookup('env', 'MONGO_ROOT_PASS') }}"
+    mongo_app_user: todo-app
+    mongo_app_pass: "{{ lookup('env', 'MONGO_APP_PASS') }}"
 
   tasks:
     - name: Install prerequisites
@@ -65,6 +67,11 @@
         src: templates/.env.j2
         dest: /opt/todo-ops/.env
         mode: "0600"
+
+    - name: Copy init file
+      copy:
+        src: ../../init.js
+        dest: /opt/todo-ops/init.js
 
     - name: Pull and start containers
       shell: docker compose up -d --pull always
