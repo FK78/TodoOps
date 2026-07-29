@@ -1,0 +1,79 @@
+---
+- name: Setup todo-ops server
+  hosts: todo_servers
+  become: true
+  vars:
+    docker_image: ghcr.io/fk78/todo-ops:latest
+    app_port: "3000"
+    mongo_root_user: mongo-todoops
+    mongo_root_pass: "{{ lookup('env', 'MONGO_ROOT_PASS') }}"
+    mongo_app_user: todo-app
+    mongo_app_pass: "{{ lookup('env', 'MONGO_APP_PASS') }}"
+
+  tasks:
+    - name: Install prerequisites
+      apt:
+        name:
+          - ca-certificates
+          - curl
+          - gnupg
+        state: present
+        update_cache: true
+
+    - name: Add Docker GPG key
+      shell: |
+        install -m 0755 -d /etc/apt/keyrings
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+        chmod a+r /etc/apt/keyrings/docker.asc
+      args:
+        creates: /etc/apt/keyrings/docker.asc
+
+    - name: Add Docker apt repository
+      shell: |
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo $VERSION_CODENAME) stable" > /etc/apt/sources.list.d/docker.list
+      args:
+        creates: /etc/apt/sources.list.d/docker.list
+
+    - name: Install Docker
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-compose-plugin
+          - docker-buildx-plugin
+        state: present
+        update_cache: true
+
+    - name: Ensure Docker is running
+      service:
+        name: docker
+        state: started
+        enabled: true
+    
+    - name: Create app directory
+      file:
+        path: /opt/todo-ops
+        state: directory
+        mode: "0755"
+      
+    - name: Copy compose file
+      template:
+        src: templates/compose.yml.j2
+        dest: /opt/todo-ops/compose.yml
+      
+    - name: Copy env file
+      template:
+        src: templates/.env.j2
+        dest: /opt/todo-ops/.env
+        mode: "0600"
+
+    - name: Copy init file
+      copy:
+        src: ../../init.js
+        dest: /opt/todo-ops/init.js
+
+    - name: Pull and start containers
+      shell: docker compose up -d --pull always
+      args:
+        chdir: /opt/todo-ops
