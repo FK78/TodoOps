@@ -34,5 +34,5 @@ jobs:
           platforms: linux/arm64
           push: true
           tags: |
-            ghcr.io/{{ github.repository_owner }}/todo-ops:latest
+            ghcr.io/${{ github.repository_owner }}/todo-ops:latest
             ghcr.io/${{ github.repository_owner }}/todo-ops:${{ github.sha }}
