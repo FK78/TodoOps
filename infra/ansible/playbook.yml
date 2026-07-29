@@ -51,7 +51,7 @@
     
     - name: Create app directory
       file:
-        path: /opt/todos-ops
+        path: /opt/todo-ops
         state: directory
         mode: "0755"
       
