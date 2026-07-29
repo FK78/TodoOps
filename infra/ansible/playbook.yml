@@ -2,6 +2,11 @@
 - name: Setup todo-ops server
   hosts: todo_servers
   become: true
+  vars:
+    docker_image: fk78/todo-ops:latest
+    app_port: "3000"
+    mongo_user: mongo-todoops
+    mongo_pass: "{{ lookup('env', 'MONGO_ROOT_PASS') }}"
 
   tasks:
     - name: Install prerequisites
